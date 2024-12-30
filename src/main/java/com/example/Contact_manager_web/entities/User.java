@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+//@Builder
 public class User {
 
     @Id
@@ -36,7 +37,7 @@ public class User {
     private boolean emailVerified = false;
     private boolean phoneVerified = false;
 
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
 //    SELF, GOOGLE, GITHUB;
     private Providers provider = Providers.SELF;
     private String provideId;

@@ -2,7 +2,10 @@ package com.example.Contact_manager_web.controller;
 
 import com.example.Contact_manager_web.Forms.UserForm;
 import com.example.Contact_manager_web.entities.User;
+import com.example.Contact_manager_web.helper.Message;
+import com.example.Contact_manager_web.helper.MessageType;
 import com.example.Contact_manager_web.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -61,11 +64,11 @@ public class PageController {
 	@GetMapping("/register")
 	public String register(Model model){
 		UserForm userForm = new UserForm();
-		userForm.setName("Shubham");
-		userForm.setAbout("THis is About");
-		userForm.setEmail("s@gmail.com");
-		userForm.setPhoneNumber("2323232");
-		userForm.setPassword("23232");
+		userForm.setName(userForm.getName());
+		userForm.setAbout(userForm.getAbout());
+		userForm.setEmail(userForm.getEmail());
+		userForm.setPhoneNumber(userForm.getPhoneNumber());
+		userForm.setPassword(userForm.getPassword());
 		model.addAttribute("userForm", userForm);
 
 		return "register";
@@ -73,21 +76,40 @@ public class PageController {
 
 // Processisng Register Page
 	@PostMapping("do_register")
-	public String processingRegister(@ModelAttribute  UserForm userForm){
+	public String processingRegister(@ModelAttribute  UserForm userForm, HttpSession httpSession){
 //		System.out.println("Register Processing!!!!");
 //		System.out.println(userForm);
-		User user = User.builder()
-				.name(userForm.getName())
-				.email(userForm.getEmail())
-				.password(userForm.getPassword())
-				.about(userForm.getAbout())
-				.phoneNumber(userForm.getPhoneNumber())
-				.profilePic("https://www.vecteezy.com/png/20911740-user-profile-icon-profile-avatar-user-icon-male-icon-face-icon-profile-icon")
-				.build();
-				User savedUser =  userService.saveUser(user);
-				System.out.println("Saved User " + savedUser);
+//		User user = User.builder()
+//				.name(userForm.getName())
+//				.email(userForm.getEmail())
+//				.password(userForm.getPassword())
+//				.about(userForm.getAbout())
+//				.phoneNumber(userForm.getPhoneNumber())
+//				.profilePic("https://www.vecteezy.com/png/20911740-user-profile-icon-profile-avatar-user-icon-male-icon-face-icon-profile-icon")
+//				.build();
+//				User savedUser =  userService.saveUser(user);
+//				System.out.println("Saved User " );
 
-		return "redirect:/register";
+			User user = new User();
+			user.setName(userForm.getName());
+			user.setEmail(userForm.getEmail());
+			user.setPassword(userForm.getPassword());
+			user.setAbout(userForm.getAbout());
+			user.setPhoneNumber(userForm.getPhoneNumber());
+			user.setProfilePic("https://www.vecteezy.com/png/20911740-user-profile-icon-profile-avatar-user-icon-male-icon-face-icon-profile-icon");
+
+			User savedUser = userService.saveUser(user);
+			System.out.println("User Saved Into DataBase!!!!!!!!!");
+
+			// Add message
+		Message message = Message.builder()
+				.content("Registration Successful")
+				.type(MessageType.yellow)  // Set the type (you can choose from your enum)
+				.build();
+		httpSession.setAttribute("message" , message);
+
+
+			return "redirect:/register";
 	}
 
 }
